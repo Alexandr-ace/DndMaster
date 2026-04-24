@@ -1,15 +1,15 @@
 #![allow(dead_code, unused_variables)]
 mod battlefield;
-mod character; 
-mod dice; 
-mod enemy; 
+mod character;
+mod dice;
+mod enemy;
 mod inventory;
-mod weapon; 
+mod weapon;
+use crate::enemy::Enemy;
 use battlefield::Battlefield;
 use battlefield::EntityId;
 use character::Character;
-use crate::enemy::Enemy;
-
+// Вроде норм
 // impl From<u32> for EntityId {
 //     fn from(n: u32) -> Self {
 //         EntityId(n)
