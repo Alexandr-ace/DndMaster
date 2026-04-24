@@ -4,3 +4,4 @@ pub enum DiceType {
     D8,
     D20,
 }
+
