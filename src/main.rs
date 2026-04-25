@@ -7,6 +7,8 @@ mod inventory;
 mod weapon;
 use crate::enemy::Enemy;
 use battlefield::Battlefield;
+// use battlefield::Cell;
+// use battlefield::CellContent;
 use battlefield::EntityId;
 use character::Character;
 // Вроде норм
@@ -17,7 +19,9 @@ use character::Character;
 // }
 
 fn main() {
-    println!("Привет")
+    println!("Привет");
+    let mut field: Environment = Environment::new_game();
+    field.battlifield.render();
 }
 
 struct Environment {
