@@ -1,3 +1,5 @@
+use crate::character::Run;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct EntityId(u32);
 impl EntityId {
@@ -16,7 +18,7 @@ impl Position {
         Self { x, y, id }
     }
 }
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CellContent {
     Empty,
     Hero(EntityId),
@@ -24,19 +26,18 @@ pub enum CellContent {
     Obstacle,
 }
 impl CellContent {
-    pub fn render_str(&self) -> &'static str {
+    pub fn render(&self) -> char {
         match self {
-            CellContent::Empty => ".",
-            CellContent::Hero(_) => "Г",
-            CellContent::Enemy(_) => "В",
-            CellContent::Obstacle => "#",
+            CellContent::Empty => '.',
+            CellContent::Hero(_) => 'Г',
+            CellContent::Enemy(_) => 'В',
+            CellContent::Obstacle => '#',
         }
     }
 }
 #[derive(Debug, Clone, Copy)]
 pub struct Cell {
     pub content: CellContent,
-    pub render: &'static str,
     // можно добавить эффекты: огонь, ядовитое облако
 }
 
@@ -47,33 +48,68 @@ pub struct Battlefield {
 }
 impl Battlefield {
     pub fn new_battlefield(id_hero: EntityId, id_enemy: EntityId) -> Self {
-        let mut field = Self {
+        Self {
             grid: [[Cell {
                 content: CellContent::Empty,
-                render: ".",
             }; 10]; 10],
-            hero_position: Position::new(7, 8, id_hero),
-            enemy_positions: Position::new(9, 8, id_enemy),
-        };
-        // Ставим метки
-        field.grid[8][7].content = CellContent::Hero(id_hero);
-        field.grid[8][9].content = CellContent::Enemy(id_enemy);
-        field
-    }
-    pub fn prerender(&mut self) {
-        for row in 0..self.grid.len() {
-            for col in 0..self.grid[row].len() {
-                self.grid[row][col].render = self.grid[row][col].content.render_str();
-            }
+            hero_position: Position::new(2, 0, id_hero),
+            enemy_positions: Position::new(1, 0, id_enemy),
         }
     }
+
     pub fn render(&mut self) {
-        self.prerender();
+        self.setup_place();
         for row in 0..10 {
             for col in 0..10 {
-                print!("{} ", self.grid[row][col].render);
+                print!("{} ", self.grid[row][col].content.render());
             }
             println!(); // перенос строки после каждой строки поля
         }
+    }
+    pub fn setup_place(&mut self) {
+        self.grid[self.hero_position.x][self.hero_position.y].content =
+            CellContent::Hero(self.hero_position.id);
+        self.grid[self.enemy_positions.x][self.enemy_positions.y].content =
+            CellContent::Enemy(self.enemy_positions.id);
+    }
+    pub fn setup_place_empty(&mut self) {
+        self.grid[self.hero_position.x][self.hero_position.y].content = CellContent::Empty;
+        self.grid[self.enemy_positions.x][self.enemy_positions.y].content = CellContent::Empty;
+    }
+    pub fn hero_run(&mut self, point: &Run) {
+        match point {
+            Run::Hold => return, // Ничего не делаем
+            Run::Up => {
+                if self.hero_position.x == 0 {
+                    return;
+                } else {
+                    match self.grid[self.hero_position.x - 1][self.hero_position.y].content {
+                        CellContent::Empty => self.hero_position.x = self.hero_position.x - 1,
+                        CellContent::Hero(_) => println!("Впереди дружественный герой"),
+                        CellContent::Enemy(_) => println!("Впереди враг"),
+                        CellContent::Obstacle => println!("Впереди препятствие"),
+                    }
+                }
+            }
+            Run::Down => {
+                if self.hero_position.x >= 9 {
+                    return;
+                };
+                self.hero_position.x = self.hero_position.x + 1;
+            }
+            Run::Left => {
+                if self.hero_position.y == 0 {
+                    return;
+                };
+                self.hero_position.y = self.hero_position.y - 1;
+            }
+            Run::Right => {
+                if self.hero_position.y >= 9 {
+                    return;
+                };
+                self.hero_position.y = self.hero_position.y + 1;
+            }
+        };
+        self.setup_place_empty();
     }
 }

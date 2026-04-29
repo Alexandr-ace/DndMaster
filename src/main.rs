@@ -7,21 +7,28 @@ mod inventory;
 mod weapon;
 use crate::enemy::Enemy;
 use battlefield::Battlefield;
-// use battlefield::Cell;
-// use battlefield::CellContent;
 use battlefield::EntityId;
 use character::Character;
-// Вроде норм
 // impl From<u32> for EntityId {
 //     fn from(n: u32) -> Self {
 //         EntityId(n)
 //     }
 // }
+// git add .
+// git commit -m "Описание изменений"
+// git push origin master
 
 fn main() {
-    println!("Привет");
+    let num = 25;
+    if num == 25 {
+        println!("Handsome!")
+    } else {
+        println!("Handsome, too!")
+    }
     let mut field: Environment = Environment::new_game();
     field.battlifield.render();
+    println!("Герой двигается");
+    field.run_hero();
 }
 
 struct Environment {
@@ -48,5 +55,9 @@ impl Environment {
             enemy: Enemy::new_enemy(enemy),
             battlifield: Battlefield::new_battlefield(hero, enemy),
         }
+    }
+    pub fn run_hero(&mut self) {
+        self.battlifield.hero_run(&self.hero.move_point);
+        self.battlifield.render();
     }
 }

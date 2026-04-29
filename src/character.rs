@@ -12,15 +12,23 @@ use crate::weapon::Weapon;
 // Простой цикл боя — атака, расчёт урона через кубик, победа/поражение.
 
 // Инвентарь и зелья — использовать Vec<Item>.
+pub enum Run {
+    Hold,
+    Up,
+    Down,
+    Right,
+    Left,
+}
 
 pub struct Character {
-    id: EntityId,
+    pub id: EntityId,
     name: String,
     race: String,
     class: String,
     weapon: Weapon,
     armor: u32,
     level: u32,
+    pub move_point: Run,
     iniciative: u32,
     expirence: u32,
 }
@@ -49,6 +57,7 @@ impl Character {
             weapon: weapon,
             armor: rand::thread_rng().gen_range(7..13) as u32,
             level: 1,
+            move_point: Run::Up,
             iniciative: 0,
             expirence: 0,
         }
